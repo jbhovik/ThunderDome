@@ -12,7 +12,7 @@ public class EvilCarManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//FacePlayer ();
+		FacePlayer ();
 	}
 	
 	void FacePlayer(){

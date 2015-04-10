@@ -47,6 +47,9 @@ namespace UnityStandardAssets.Vehicles.Car
         private float m_CurrentTorque;
         private Rigidbody m_Rigidbody;
         private const float k_ReversingThreshold = 0.01f;
+		private float restartTimer = 0f;
+		private float restartDelay = .06f;
+		private bool shouldRestart = false;
 		public int fuel;
 		public Slider fuelSlider;
 		private float nextActionTime = 2f; 
@@ -59,6 +62,8 @@ namespace UnityStandardAssets.Vehicles.Car
         public float MaxSpeed{get { return m_Topspeed; }}
         public float Revs { get; private set; }
         public float AccelInput { get; private set; }
+		public Canvas HUDCanvas;
+		public Animator anim;
 
         // Use this for initialization
         private void Start()
@@ -76,6 +81,7 @@ namespace UnityStandardAssets.Vehicles.Car
             m_CurrentTorque = m_FullTorqueOverAllWheels - (m_TractionControl*m_FullTorqueOverAllWheels);
 			fuel = 50;
 			fuelSlider.value = fuel;
+			anim = HUDCanvas.GetComponent<Animator> ();
         }
 
 
@@ -372,10 +378,15 @@ namespace UnityStandardAssets.Vehicles.Car
         }
 
 		void Update () { 
-			if (Time.time > nextActionTime) 
-			{ 
+			if (Time.time > nextActionTime)	{ 
+				Debug.Log (restartTimer + " >= " + restartDelay);
+				restartTimer += Time.deltaTime;
 				nextActionTime += time_period; 
 				DecreaseFuel();
+				if (shouldRestart){
+					testForRestart();
+				}
+				testForFuelRestart();
 			} 
 		}
 
@@ -384,18 +395,35 @@ namespace UnityStandardAssets.Vehicles.Car
 			fuelSlider.value = fuel;
 		}
 
+		void testForFuelRestart(){
+			if (fuel < 1)
+				Application.LoadLevel (Application.loadedLevel);
+		}
+
+		void testForRestart(){
+			if (restartTimer >= restartDelay){
+				restartTimer = 0f;
+				Application.LoadLevel(Application.loadedLevel);
+			}
+		}
+
 		void OnTriggerEnter(Collider other){
 			if (other.gameObject.tag == "GasPowerUp") {
 				other.gameObject.SetActive(false);
 
 				if (fuel > 90)
 					fuel = 100;
-				else if (fuel < 1)
+				else if (fuel < -9)
 					fuel = 0;
 				else
 					fuel += 10;
 
 				fuelSlider.value = fuel;
+			}
+
+			if (other.gameObject.tag == "EnemyCar"){
+				anim.SetTrigger("CarGameOver");
+				shouldRestart = true;
 			}
 		}
     }

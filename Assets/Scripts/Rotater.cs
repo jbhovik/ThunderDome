@@ -19,7 +19,6 @@ public class Rotater : MonoBehaviour {
 		Vector3 gasCanVector = transform.localPosition - GameObject.FindGameObjectWithTag ("Player").transform.localPosition;
 		Vector3 forward = GameObject.FindGameObjectWithTag("Player").transform.forward;
 
-		Debug.Log ("Forward: " + forward);
 		Vector3 farForward = new Vector3 (forward.x * 20, forward.y * 20, forward.z * 20);
 		Vector3 perp = new Vector3(-forward.z, forward.y, forward.x);
 

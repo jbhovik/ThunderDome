@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CarGameOverManager.cs" />
      <Compile Include="Assets\EvilCarAI.cs" />
      <Compile Include="Assets\EvilCarManager.cs" />
      <Compile Include="Assets\FindPlayer.cs" />

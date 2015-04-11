@@ -21,6 +21,7 @@ public class EvilCarManager : MonoBehaviour {
 			Quaternion newRotation = Quaternion.LookRotation(targetDir);
 			transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 1.0f);
 			chaseState = "moving";
+
 		} else if (chaseState.Equals ("moving")) {
 			Vector3 startPosition = transform.position;
 			Vector3 endPosition = GameObject.FindGameObjectWithTag("Player").transform.position;

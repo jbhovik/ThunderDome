@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace UnityStandardAssets.Vehicles.Car
 {
@@ -377,33 +378,42 @@ namespace UnityStandardAssets.Vehicles.Car
             return false;
         }
 
+		IEnumerator DelayThreeSeconds()
+		{
+			// suspend execution for 5 seconds
+			yield return new WaitForSeconds(3);
+			Application.LoadLevel (0);
+		}
+
+
 		void Update () { 
-			if (Time.time > nextActionTime)	{ 
-				Debug.Log (restartTimer + " >= " + restartDelay);
-				restartTimer += Time.deltaTime;
-				nextActionTime += time_period; 
-				DecreaseFuel();
-				if (shouldRestart){
-					testForRestart();
-				}
-				testForFuelRestart();
-			} 
+			restartTimer += Time.deltaTime;
+			DecreaseFuel ();
+			TestFuelRestart ();
+			TestFallingRestart ();
+		}
+
+		void TestFallingRestart(){
+			if (transform.position.y < -10) {
+				anim.SetTrigger("CarGameOver");
+				StartCoroutine("DelayThreeSeconds");
+			}
 		}
 
 		void DecreaseFuel(){
-			fuel -= 2;
-			fuelSlider.value = fuel;
+			if (Time.timeSinceLevelLoad > nextActionTime) {
+				nextActionTime += time_period;
+				fuel -= 2;
+				fuelSlider.value = fuel;
+			}
 		}
 
-		void testForFuelRestart(){
-			if (fuel < 1)
-				Application.LoadLevel (Application.loadedLevel);
-		}
+		void TestFuelRestart(){
 
-		void testForRestart(){
-			if (restartTimer >= restartDelay){
-				restartTimer = 0f;
-				Application.LoadLevel(Application.loadedLevel);
+			shouldRestart = false;
+			if (fuel < 1) {
+				anim.SetTrigger("CarGameOver");
+				StartCoroutine("DelayThreeSeconds");
 			}
 		}
 
@@ -423,7 +433,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
 			if (other.gameObject.tag == "EnemyCar"){
 				anim.SetTrigger("CarGameOver");
-				shouldRestart = true;
+				StartCoroutine("DelayThreeSeconds");
 			}
 		}
     }
